@@ -79,6 +79,12 @@ final class AssignToPropertyTypeInferer
                 return null;
             }
 
+            if ($this->propertyFetchAnalyzer->isPropertyFetch($node->expr)
+                && $this->propertyFetchAnalyzer->isPropertyFetchExprNotNativelyTyped($node->expr)
+            ) {
+                return null;
+            }
+
             if ($this->exprAnalyzer->isNonTypedFromParam($node->expr)) {
                 return null;
             }

@@ -12,6 +12,7 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticCall;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassLike;
@@ -19,6 +20,11 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
+use PHPStan\Analyser\Scope;
+use PHPStan\Reflection\Php\PhpPropertyReflection;
+use PHPStan\Reflection\PropertyReflection;
+use PHPStan\Reflection\WrapperPropertyReflection;
+use PHPStan\Type\MixedType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\ThisType;
 use Rector\Core\Enum\ObjectReference;
@@ -26,6 +32,7 @@ use Rector\Core\PhpParser\AstResolver;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\ValueObject\MethodName;
 use Rector\NodeNameResolver\NodeNameResolver;
+use Rector\NodeTypeResolver\Node\AttributeKey;
 use Rector\NodeTypeResolver\NodeTypeResolver;
 use Rector\PhpDocParser\NodeTraverser\SimpleCallableNodeTraverser;
 use Rector\StaticTypeMapper\ValueObject\Type\FullyQualifiedObjectType;
@@ -228,6 +235,55 @@ final class PropertyFetchAnalyzer
 
         /** @var PropertyFetch $expr */
         return $this->nodeNameResolver->isNames($expr->name, $propertyNames);
+    }
+
+    public function isPropertyFetchExprNotNativelyTyped(Expr $expr): bool
+    {
+        if (! $expr instanceof PropertyFetch) {
+            return false;
+        }
+
+        if (! $expr->name instanceof Identifier) {
+            return false;
+        }
+
+        $scope = $expr->getAttribute(AttributeKey::SCOPE);
+        if (! $scope instanceof Scope) {
+            return false;
+        }
+
+        $propertyName = $expr->name->toString();
+        $propertyHolderType = $scope->getType($expr->var);
+        if (! $propertyHolderType->hasProperty($propertyName)->yes()) {
+            return false;
+        }
+
+        $originalProperty = $propertyHolderType->getProperty($propertyName, $scope);
+        $nativePropertyReflection = $this->getNativeReflectionForProperty($originalProperty);
+
+        if ($nativePropertyReflection === null) {
+            return false;
+        }
+
+        if ($nativePropertyReflection->getNativeType() instanceof MixedType) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function getNativeReflectionForProperty(PropertyReflection $propertyReflection): ?PhpPropertyReflection
+    {
+        $reflection = $propertyReflection;
+        while ($reflection instanceof WrapperPropertyReflection) {
+            $reflection = $reflection->getOriginalReflection();
+        }
+
+        if (! $reflection instanceof PhpPropertyReflection) {
+            return null;
+        }
+
+        return $reflection;
     }
 
     private function isTraitLocalPropertyFetch(Node $node): bool

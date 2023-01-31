@@ -23,6 +23,7 @@ use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\UnionType;
 use Rector\Core\NodeAnalyzer\ParamAnalyzer;
+use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
 use Rector\Core\NodeManipulator\ClassMethodPropertyFetchManipulator;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\NodeNameResolver\NodeNameResolver;
@@ -53,7 +54,8 @@ final class TrustedClassMethodPropertyTypeInferer
         private readonly BetterNodeFinder $betterNodeFinder,
         private readonly ParamAnalyzer $paramAnalyzer,
         private readonly AssignToPropertyTypeInferer $assignToPropertyTypeInferer,
-        private readonly TypeComparator $typeComparator
+        private readonly TypeComparator $typeComparator,
+        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
     ) {
     }
 
@@ -81,6 +83,12 @@ final class TrustedClassMethodPropertyTypeInferer
 
         $resolvedTypes = [];
         foreach ($assignedExprs as $assignedExpr) {
+            if ($this->propertyFetchAnalyzer->isPropertyFetch($assignedExpr)
+                && $this->propertyFetchAnalyzer->isPropertyFetchExprNotNativelyTyped($assignedExpr)
+            ) {
+                continue;
+            }
+
             $resolvedTypes[] = $this->nodeTypeResolver->getType($assignedExpr);
         }
 
