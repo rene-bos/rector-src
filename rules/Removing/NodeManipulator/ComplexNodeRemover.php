@@ -16,7 +16,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Property;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Comparing\NodeComparator;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\ValueObject\MethodName;
@@ -34,7 +34,7 @@ final class ComplexNodeRemover
         private readonly NodeRemover $nodeRemover,
         private readonly SideEffectNodeDetector $sideEffectNodeDetector,
         private readonly SimpleCallableNodeTraverser $simpleCallableNodeTraverser,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly NodeComparator $nodeComparator
     ) {
     }
@@ -45,7 +45,7 @@ final class ComplexNodeRemover
         bool $removeAssignSideEffect
     ): bool {
         $propertyName = $this->nodeNameResolver->getName($property);
-        $totalPropertyFetch = $this->propertyFetchAnalyzer->countLocalPropertyFetchName($class, $propertyName);
+        $totalPropertyFetch = $this->localPropertyFetchAnalyzer->countLocalPropertyFetchName($class, $propertyName);
         $expressions = [];
 
         $this->simpleCallableNodeTraverser->traverseNodesWithCallable($class->stmts, function (Node $node) use (
@@ -168,7 +168,7 @@ final class ComplexNodeRemover
                 continue;
             }
 
-            if (! $this->propertyFetchAnalyzer->isLocalPropertyFetch($stmtExpr->var)) {
+            if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($stmtExpr->var)) {
                 continue;
             }
 
@@ -224,7 +224,7 @@ final class ComplexNodeRemover
             return $propertyFetches;
         }
 
-        if ($this->propertyFetchAnalyzer->isLocalPropertyFetch($expr)) {
+        if ($this->localPropertyFetchAnalyzer->isLocalPropertyFetch($expr)) {
             /** @var StaticPropertyFetch|PropertyFetch $expr */
             return array_merge($propertyFetches, [$expr]);
         }

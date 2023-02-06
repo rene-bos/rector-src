@@ -19,7 +19,7 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\Type;
 use Rector\Core\NodeAnalyzer\ExprAnalyzer;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Node\Value\ValueResolver;
 use Rector\NodeTypeResolver\NodeTypeResolver;
 use Rector\NodeTypeResolver\PHPStan\Type\TypeFactory;
@@ -45,7 +45,7 @@ final class AssignToPropertyTypeInferer
         private readonly NodeTypeResolver $nodeTypeResolver,
         private readonly ExprAnalyzer $exprAnalyzer,
         private readonly ValueResolver $valueResolver,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -65,7 +65,7 @@ final class AssignToPropertyTypeInferer
 
             $expr = $this->propertyAssignMatcher->matchPropertyAssignExpr($node, $propertyName);
             if (! $expr instanceof Expr) {
-                if (! $this->propertyFetchAnalyzer->isLocalPropertyFetch($node->var)) {
+                if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($node->var)) {
                     return null;
                 }
 

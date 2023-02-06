@@ -20,7 +20,7 @@ use PHPStan\Type\MixedType;
 use PHPStan\Type\Type;
 use Rector\CodeQuality\TypeResolver\ArrayDimFetchTypeResolver;
 use Rector\Core\NodeAnalyzer\ClassAnalyzer;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\NodeNameResolver\NodeNameResolver;
 use Rector\NodeTypeResolver\Node\AttributeKey;
@@ -42,7 +42,7 @@ final class LocalPropertyAnalyzer
         private readonly BetterNodeFinder $betterNodeFinder,
         private readonly ArrayDimFetchTypeResolver $arrayDimFetchTypeResolver,
         private readonly NodeTypeResolver $nodeTypeResolver,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly TypeFactory $typeFactory,
     ) {
     }
@@ -67,7 +67,7 @@ final class LocalPropertyAnalyzer
                 return null;
             }
 
-            if (! $this->propertyFetchAnalyzer->isLocalPropertyFetch($node)) {
+            if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($node)) {
                 return null;
             }
 

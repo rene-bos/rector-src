@@ -12,7 +12,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\Node\Stmt\Trait_;
 use PHPStan\Type\TypeWithClassName;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\AstResolver;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\Reflection\ReflectionResolver;
@@ -32,7 +32,7 @@ final class PropertyFetchFinder
         private readonly ReflectionResolver $reflectionResolver,
         private readonly AstResolver $astResolver,
         private readonly NodeTypeResolver $nodeTypeResolver,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -70,7 +70,7 @@ final class PropertyFetchFinder
         $foundPropertyFetches = [];
 
         foreach ($propertyFetches as $propertyFetch) {
-            if ($this->propertyFetchAnalyzer->isLocalPropertyFetchName($propertyFetch, $paramName)) {
+            if ($this->localPropertyFetchAnalyzer->isLocalPropertyFetchName($propertyFetch, $paramName)) {
                 $foundPropertyFetches[] = $propertyFetch;
             }
         }

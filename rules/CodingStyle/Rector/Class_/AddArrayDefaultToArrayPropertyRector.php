@@ -19,7 +19,7 @@ use PhpParser\Node\Stmt\PropertyProperty;
 use PHPStan\Type\Type;
 use Rector\CodingStyle\TypeAnalyzer\IterableTypeAnalyzer;
 use Rector\Core\NodeAnalyzer\ArgsAnalyzer;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\Rector\AbstractRector;
 use Rector\NodeTypeResolver\Node\AttributeKey;
 use Rector\Privatization\NodeManipulator\VisibilityManipulator;
@@ -33,7 +33,7 @@ use Symplify\RuleDocGenerator\ValueObject\RuleDefinition;
 final class AddArrayDefaultToArrayPropertyRector extends AbstractRector
 {
     public function __construct(
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly IterableTypeAnalyzer $iterableTypeAnalyzer,
         private readonly ArgsAnalyzer $argsAnalyzer,
         private readonly VisibilityManipulator $visibilityManipulator
@@ -226,14 +226,14 @@ CODE_SAMPLE
                 return null;
             }
 
-            if ($this->propertyFetchAnalyzer->isLocalPropertyOfNames(
+            if ($this->localPropertyFetchAnalyzer->isLocalPropertyOfNames(
                 $node->left,
                 $propertyNames
             ) && $this->valueResolver->isNull($node->right)) {
                 $node->right = new Array_();
             }
 
-            if ($this->propertyFetchAnalyzer->isLocalPropertyOfNames(
+            if ($this->localPropertyFetchAnalyzer->isLocalPropertyOfNames(
                 $node->right,
                 $propertyNames
             ) && $this->valueResolver->isNull($node->left)) {
@@ -262,14 +262,14 @@ CODE_SAMPLE
             return false;
         }
 
-        if ($this->propertyFetchAnalyzer->isLocalPropertyOfNames(
+        if ($this->localPropertyFetchAnalyzer->isLocalPropertyOfNames(
             $expr->left,
             $propertyNames
         ) && $this->valueResolver->isNull($expr->right)) {
             return true;
         }
 
-        if (! $this->propertyFetchAnalyzer->isLocalPropertyOfNames($expr->right, $propertyNames)) {
+        if (! $this->localPropertyFetchAnalyzer->isLocalPropertyOfNames($expr->right, $propertyNames)) {
             return false;
         }
 

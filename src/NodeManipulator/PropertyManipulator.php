@@ -30,7 +30,7 @@ use PHPStan\Reflection\ClassReflection;
 use PHPStan\Type\ObjectType;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfo;
 use Rector\BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\AstResolver;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\PhpParser\NodeFinder\PropertyFetchFinder;
@@ -89,7 +89,7 @@ final class PropertyManipulator
         private readonly PromotedPropertyResolver $promotedPropertyResolver,
         private readonly ConstructorAssignDetector $constructorAssignDetector,
         private readonly AstResolver $astResolver,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly MultiInstanceofChecker $multiInstanceofChecker
     ) {
     }
@@ -230,7 +230,7 @@ final class PropertyManipulator
                 continue;
             }
 
-            if ($this->propertyFetchAnalyzer->containsLocalPropertyFetchName($trait, $propertyName)) {
+            if ($this->localPropertyFetchAnalyzer->containsLocalPropertyFetchName($trait, $propertyName)) {
                 return true;
             }
         }

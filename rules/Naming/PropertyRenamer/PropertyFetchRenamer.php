@@ -10,14 +10,14 @@ use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Identifier;
 use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\VarLikeIdentifier;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\PhpDocParser\NodeTraverser\SimpleCallableNodeTraverser;
 
 final class PropertyFetchRenamer
 {
     public function __construct(
         private readonly SimpleCallableNodeTraverser $simpleCallableNodeTraverser,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -27,7 +27,7 @@ final class PropertyFetchRenamer
         $this->simpleCallableNodeTraverser->traverseNodesWithCallable(
             $classLike,
             function (Node $node) use ($currentName, $expectedName): ?Node {
-                if (! $this->propertyFetchAnalyzer->isLocalPropertyFetchName($node, $currentName)) {
+                if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetchName($node, $currentName)) {
                     return null;
                 }
 

@@ -10,7 +10,7 @@ use PhpParser\Node\Stmt\ClassLike;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Property;
 use PhpParser\NodeTraverser;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\ValueObject\MethodName;
 use Rector\NodeNameResolver\NodeNameResolver;
@@ -22,7 +22,7 @@ final class PropertyFetchAssignManipulator
         private readonly SimpleCallableNodeTraverser $simpleCallableNodeTraverser,
         private readonly NodeNameResolver $nodeNameResolver,
         private readonly BetterNodeFinder $betterNodeFinder,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -48,7 +48,7 @@ final class PropertyFetchAssignManipulator
                     return null;
                 }
 
-                if (! $this->propertyFetchAnalyzer->isLocalPropertyFetchName($node->var, $propertyName)) {
+                if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetchName($node->var, $propertyName)) {
                     return null;
                 }
 

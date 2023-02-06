@@ -21,7 +21,7 @@ use PHPStan\Reflection\Native\NativeFunctionReflection;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\MixedType;
 use Rector\Core\NodeAnalyzer\ArgsAnalyzer;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\Rector\AbstractScopeAwareRector;
 use Rector\Core\Reflection\ReflectionResolver;
 use Rector\Core\ValueObject\PhpVersionFeature;
@@ -332,7 +332,7 @@ final class NullToStrictStringFuncCallArgRector extends AbstractScopeAwareRector
     public function __construct(
         private readonly ReflectionResolver $reflectionResolver,
         private readonly ArgsAnalyzer $argsAnalyzer,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -501,7 +501,7 @@ CODE_SAMPLE
         }
 
         if (! $expr instanceof MethodCall) {
-            return $this->propertyFetchAnalyzer->isLocalPropertyFetch($expr);
+            return $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($expr);
         }
 
         return true;

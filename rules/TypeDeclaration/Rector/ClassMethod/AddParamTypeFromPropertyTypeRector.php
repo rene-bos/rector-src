@@ -13,7 +13,7 @@ use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Function_;
 use PhpParser\NodeTraverser;
 use PHPStan\Type\Type;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\Rector\AbstractRector;
 use Rector\Core\ValueObject\PhpVersionFeature;
 use Rector\NodeTypeResolver\PHPStan\Type\TypeFactory;
@@ -34,7 +34,7 @@ final class AddParamTypeFromPropertyTypeRector extends AbstractRector implements
     private const ERROR_MESSAGE = 'Adds param type declaration based on property type the value is assigned to PHPUnit provider return type declaration';
 
     public function __construct(
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly SimpleCallableNodeTraverser $simpleCallableNodeTraverser,
         private readonly TypeFactory $typeFactory,
     ) {
@@ -158,7 +158,7 @@ CODE_SAMPLE
                 return null;
             }
 
-            if (! $this->propertyFetchAnalyzer->isVariableAssignToThisPropertyFetch($node, $paramName)) {
+            if (! $this->localPropertyFetchAnalyzer->isVariableAssignToThisPropertyFetch($node, $paramName)) {
                 return null;
             }
 

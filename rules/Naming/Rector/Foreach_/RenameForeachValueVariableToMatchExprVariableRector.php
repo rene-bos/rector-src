@@ -8,7 +8,7 @@ use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\Foreach_;
 use Rector\CodeQuality\NodeAnalyzer\ForeachAnalyzer;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\Rector\AbstractRector;
 use Rector\Naming\ExpectedNameResolver\InflectorSingularResolver;
 use Symplify\RuleDocGenerator\ValueObject\CodeSample\CodeSample;
@@ -22,7 +22,7 @@ final class RenameForeachValueVariableToMatchExprVariableRector extends Abstract
     public function __construct(
         private readonly InflectorSingularResolver $inflectorSingularResolver,
         private readonly ForeachAnalyzer $foreachAnalyzer,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -73,7 +73,7 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
-        $isPropertyFetch = $this->propertyFetchAnalyzer->isLocalPropertyFetch($node->expr);
+        $isPropertyFetch = $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($node->expr);
         if (! $node->expr instanceof Variable && ! $isPropertyFetch) {
             return null;
         }

@@ -7,12 +7,12 @@ namespace Rector\TypeDeclaration\Matcher;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\ArrayDimFetch;
 use PhpParser\Node\Expr\Assign;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 
 final class PropertyAssignMatcher
 {
     public function __construct(
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -24,7 +24,7 @@ final class PropertyAssignMatcher
     public function matchPropertyAssignExpr(Assign $assign, string $propertyName): ?Expr
     {
         $assignVar = $assign->var;
-        if ($this->propertyFetchAnalyzer->isLocalPropertyFetchName($assignVar, $propertyName)) {
+        if ($this->localPropertyFetchAnalyzer->isLocalPropertyFetchName($assignVar, $propertyName)) {
             return $assign->expr;
         }
 
@@ -32,7 +32,7 @@ final class PropertyAssignMatcher
             return null;
         }
 
-        if ($this->propertyFetchAnalyzer->isLocalPropertyFetchName($assignVar->var, $propertyName)) {
+        if ($this->localPropertyFetchAnalyzer->isLocalPropertyFetchName($assignVar->var, $propertyName)) {
             return $assign->expr;
         }
 

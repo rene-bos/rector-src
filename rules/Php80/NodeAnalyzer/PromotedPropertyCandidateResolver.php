@@ -13,7 +13,7 @@ use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\ClassMethod;
 use PhpParser\Node\Stmt\Expression;
 use PhpParser\Node\Stmt\Property;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Comparing\NodeComparator;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\ValueObject\MethodName;
@@ -26,7 +26,7 @@ final class PromotedPropertyCandidateResolver
         private readonly NodeNameResolver $nodeNameResolver,
         private readonly BetterNodeFinder $betterNodeFinder,
         private readonly NodeComparator $nodeComparator,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer
     ) {
     }
 
@@ -84,7 +84,7 @@ final class PromotedPropertyCandidateResolver
                 continue;
             }
 
-            if (! $this->propertyFetchAnalyzer->isLocalPropertyFetchName($assign->var, $propertyName)) {
+            if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetchName($assign->var, $propertyName)) {
                 continue;
             }
 

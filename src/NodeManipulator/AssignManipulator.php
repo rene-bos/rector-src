@@ -21,7 +21,7 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\FunctionLike;
 use PhpParser\Node\Stmt\Expression;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Comparing\NodeComparator;
 use Rector\Core\PhpParser\Node\BetterNodeFinder;
 use Rector\Core\Util\MultiInstanceofChecker;
@@ -45,7 +45,7 @@ final class AssignManipulator
         private readonly NodeNameResolver $nodeNameResolver,
         private readonly NodeComparator $nodeComparator,
         private readonly BetterNodeFinder $betterNodeFinder,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly MultiInstanceofChecker $multiInstanceofChecker
     ) {
     }
@@ -128,7 +128,7 @@ final class AssignManipulator
     public function resolveAssignsToLocalPropertyFetches(FunctionLike $functionLike): array
     {
         return $this->betterNodeFinder->find((array) $functionLike->getStmts(), function (Node $node): bool {
-            if (! $this->propertyFetchAnalyzer->isLocalPropertyFetch($node)) {
+            if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($node)) {
                 return false;
             }
 

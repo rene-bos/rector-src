@@ -10,7 +10,7 @@ use PhpParser\Node\Expr\PropertyFetch;
 use PhpParser\Node\Expr\StaticPropertyFetch;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\Node\Stmt\Property;
-use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
+use Rector\Core\NodeAnalyzer\LocalPropertyFetchAnalyzer;
 use Rector\Core\PhpParser\Node\NodeFactory;
 use Rector\NodeNameResolver\NodeNameResolver;
 use Rector\PhpDocParser\NodeTraverser\SimpleCallableNodeTraverser;
@@ -21,7 +21,7 @@ final class PropertyFetchWithConstFetchReplacer
     public function __construct(
         private readonly NodeNameResolver $nodeNameResolver,
         private readonly SimpleCallableNodeTraverser $simpleCallableNodeTraverser,
-        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly LocalPropertyFetchAnalyzer $localPropertyFetchAnalyzer,
         private readonly ConstantNaming $constantNaming,
         private readonly NodeFactory $nodeFactory
     ) {
@@ -38,7 +38,7 @@ final class PropertyFetchWithConstFetchReplacer
             $propertyName,
             $constantName
         ): ?ClassConstFetch {
-            if (! $this->propertyFetchAnalyzer->isLocalPropertyFetch($node)) {
+            if (! $this->localPropertyFetchAnalyzer->isLocalPropertyFetch($node)) {
                 return null;
             }
 
