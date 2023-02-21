@@ -15,9 +15,11 @@ use PHPStan\Type\ThisType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeWithClassName;
 use PHPStan\Type\UnionType;
+use Rector\Core\NodeAnalyzer\PropertyFetchAnalyzer;
 use Rector\NodeCollector\ValueObject\ArrayCallable;
 use Rector\NodeTypeResolver\NodeTypeResolver;
 use Rector\NodeTypeResolver\PHPStan\Type\TypeFactory;
+use Rector\TypeDeclaration\TypeAnalyzer\PropertyFetchTypeAnalyzer;
 
 final class CallTypesResolver
 {
@@ -25,6 +27,8 @@ final class CallTypesResolver
         private readonly NodeTypeResolver $nodeTypeResolver,
         private readonly TypeFactory $typeFactory,
         private readonly ReflectionProvider $reflectionProvider,
+        private readonly PropertyFetchAnalyzer $propertyFetchAnalyzer,
+        private readonly PropertyFetchTypeAnalyzer $propertyFetchTypeAnalyzer,
     ) {
     }
 
@@ -57,6 +61,10 @@ final class CallTypesResolver
     private function resolveStrictArgValueType(Arg $arg): Type
     {
         $argValueType = $this->nodeTypeResolver->getNativeType($arg->value);
+
+        if ($this->isNotNativelyTypedPropertyFetch($arg)) {
+            return new MixedType();
+        }
 
         // "self" in another object is not correct, this make it independent
         $argValueType = $this->correctSelfType($argValueType);
@@ -145,5 +153,14 @@ final class CallTypesResolver
         }
 
         return true;
+    }
+
+    private function isNotNativelyTypedPropertyFetch(Arg $arg): bool
+    {
+        if (! $this->propertyFetchAnalyzer->isPropertyFetch($arg->value)) {
+            return false;
+        }
+
+        return $this->propertyFetchTypeAnalyzer->isPropertyFetchExprNotNativelyTyped($arg->value);
     }
 }
