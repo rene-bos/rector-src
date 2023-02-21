@@ -85,11 +85,11 @@ final class TrustedClassMethodPropertyTypeInferer
 
         $resolvedTypes = [];
         foreach ($assignedExprs as $assignedExpr) {
-            if ($this->propertyFetchAnalyzer->isPropertyFetch($assignedExpr)
-                && $this->propertyFetchTypeAnalyzer->isPropertyFetchExprNotNativelyTyped($assignedExpr)
-            ) {
-                continue;
-            }
+//            if ($this->propertyFetchAnalyzer->isPropertyFetch($assignedExpr)
+//                && $this->propertyFetchTypeAnalyzer->isPropertyFetchExprNotNativelyTyped($assignedExpr)
+//            ) {
+//                continue;
+//            }
 
             $resolvedTypes[] = $this->nodeTypeResolver->getType($assignedExpr);
         }
